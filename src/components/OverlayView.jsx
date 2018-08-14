@@ -96,16 +96,18 @@ export class OverlayView extends React.PureComponent {
       `OverlayView requires either props.mapPaneName or props.defaultMapPaneName but got %s`,
       mapPaneName
     )
-    // https://developers.google.com/maps/documentation/javascript/3.exp/reference#MapPanes
-    const mapPanes = this.state[OVERLAY_VIEW].getPanes()
-    mapPanes[mapPaneName].appendChild(this.containerElement)
+    if (this.containerElement) {
+      // https://developers.google.com/maps/documentation/javascript/3.exp/reference#MapPanes
+      const mapPanes = this.state[OVERLAY_VIEW].getPanes()
+      mapPanes[mapPaneName].appendChild(this.containerElement)
 
-    ReactDOM.unstable_renderSubtreeIntoContainer(
-      this,
-      React.Children.only(this.props.children),
-      this.containerElement,
-      this.onPositionElement
-    )
+      ReactDOM.unstable_renderSubtreeIntoContainer(
+        this,
+        React.Children.only(this.props.children),
+        this.containerElement,
+        this.onPositionElement
+      )
+    }
   }
 
   onPositionElement() {
@@ -126,9 +128,11 @@ export class OverlayView extends React.PureComponent {
   }
 
   onRemove() {
-    this.containerElement.parentNode.removeChild(this.containerElement)
-    ReactDOM.unmountComponentAtNode(this.containerElement)
-    this.containerElement = null
+    if (this.containerElement) {
+      this.containerElement.parentNode.removeChild(this.containerElement)
+      ReactDOM.unmountComponentAtNode(this.containerElement)
+      this.containerElement = null
+    }
   }
 
   componentDidMount() {
